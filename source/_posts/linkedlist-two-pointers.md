@@ -1,5 +1,5 @@
 ---
-title: 链表双指针技巧：合并、相交与删除
+title: 🔗 链表双指针技巧：合并、相交与删除
 date: 2026-01-29 21:00:00
 tags:
   - 算法
@@ -11,7 +11,7 @@ categories:
 cover: /img/cover1.png
 ---
 
-三道题目均已完成，核心思路均为**双指针**技巧 + **哑节点（dummy）**边界处理。
+> 🎯 三道经典链表题，核心思路均为 **双指针** + **哑节点（dummy）** 边界处理！
 
 <!--more-->
 
@@ -19,29 +19,28 @@ cover: /img/cover1.png
 
 ## 1️⃣ 合并两个有序链表
 
-**核心思路**：
+{% note info flat %}
+💡 **核心思路**：创建哑节点统一边界，双指针同步比较，较小者接入结果链！
+{% endnote %}
 
-- 创建哑节点统一边界处理
-- 双指针 `list1` 和 `list2` 同步比较
-- 每次将较小节点接入结果链，对应指针后移
+### 关键步骤
 
-**关键指针移动**：
+| 步骤 | 操作 |
+|:---:|:---|
+| 1️⃣ | `current` 始终指向已合并链表的尾部 |
+| 2️⃣ | 比较两个节点值，较小者接入 `current->next` |
+| 3️⃣ | 对应指针后移一位 |
+| 4️⃣ | 循环结束后，接入剩余链表 |
 
-1. `current` 始终指向已合并链表的尾部
-2. 比较 `list1->val` 和 `list2->val`，较小者接入 `current->next`
-3. 对应指针（`list1` 或 `list2`）后移一位
-4. `current` 后移，维护尾部位置
-5. 循环结束后，将剩余非空链表直接接入
-
-**代码实现**：
+### 代码实现
 
 ```cpp
 ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
-    // 创建哑节点简化边界处理
+    // 🎭 创建哑节点简化边界处理
     ListNode* dummy = new ListNode(-1);
     ListNode* current = dummy;
     
-    // 双指针遍历两个链表
+    // 🔄 双指针遍历两个链表
     while (list1 && list2) {
         if (list1->val <= list2->val) {
             current->next = list1;
@@ -53,35 +52,36 @@ ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
         current = current->next;
     }
     
+    // ➕ 接入剩余链表
     current->next = list1 ? list1 : list2;
+    
     ListNode* head = dummy->next;
-    delete dummy; // 释放哑节点（可选，取决于是否允许额外节点）
+    delete dummy;
     return head;
 }
 ```
 
-**时间复杂度**：O(m + n)  
-**空间复杂度**：O(1)
+{% note success flat %}
+⏱️ **时间复杂度**：O(m + n) | **空间复杂度**：O(1)
+{% endnote %}
 
 ---
 
 ## 2️⃣ 相交链表
 
-**核心思路**：
+{% note warning flat %}
+🔀 **浪漫算法**：两个指针各自走完后，走对方的路，若有缘一定会相遇！
+{% endnote %}
 
-- 双指针 `pA` 和 `pB` 分别从 `headA` 和 `headB` 出发
-- 到达末尾后跳转到对方起点，消除长度差
-- 第二轮遍历时必然同步到达交点（或同时为 `nullptr`）
+### 核心原理
 
-**关键指针移动**：
+```text
+📏 路径长度相等：lenA + lenB = lenB + lenA
+🎯 有交点 → 第二轮相遇于交点
+❌ 无交点 → 同时到达 nullptr
+```
 
-1. `pA` 遍历完链表 A 后跳转到 `headB`
-2. `pB` 遍历完链表 B 后跳转到 `headA`
-3. 路径长度相等：`lenA + lenB = lenB + lenA`
-4. 有交点时在第二轮相遇于交点
-5. 无交点时同时到达 `nullptr`
-
-**代码实现**：
+### 代码实现
 
 ```cpp
 ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
@@ -89,99 +89,96 @@ ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
     
     ListNode *pA = headA, *pB = headB;
     
-    // 当两个指针不相等时继续遍历
+    // 💫 当两个指针不相等时继续遍历
     while (pA != pB) {
-        // pA 到达末尾后跳转到 headB
-        pA = (pA == nullptr) ? headB : pA->next;
-        // pB 到达末尾后跳转到 headA
-        pB = (pB == nullptr) ? headA : pB->next;
+        pA = (pA == nullptr) ? headB : pA->next;  // 🔄 走完A走B
+        pB = (pB == nullptr) ? headA : pB->next;  // 🔄 走完B走A
     }
     
-    // 1. 有交点：pA/pB 指向交点
-    // 2. 无交点：pA/pB 同时为 nullptr
-    return pA;
+    return pA;  // 🎉 相遇点 or nullptr
 }
 ```
 
-**时间复杂度**：O(m + n)  
-**空间复杂度**：O(1)
+{% note success flat %}
+⏱️ **时间复杂度**：O(m + n) | **空间复杂度**：O(1)
+{% endnote %}
 
 ---
 
 ## 3️⃣ 删除链表的倒数第 N 个结点
 
-**核心思路**：
+{% note info flat %}
+🎯 **快慢指针**：快指针先走 n+1 步，当快指针到末尾时，慢指针恰好在待删除节点的前驱！
+{% endnote %}
 
-- 快慢指针维持固定间距 `n+1`
-- 快指针先走 `n+1` 步，使慢指针最终停在待删除节点的**前驱**
-- 哑节点统一处理删除头节点的边界情况
+### 关键步骤
 
-**关键指针移动**：
+| 步骤 | 操作 | 说明 |
+|:---:|:---|:---|
+| 1️⃣ | 创建 `dummy` 节点 | 统一处理删除头节点 |
+| 2️⃣ | `fast` 先走 n+1 步 | 确保间距正确 |
+| 3️⃣ | 双指针同步移动 | 直到 `fast` 到达末尾 |
+| 4️⃣ | 删除目标节点 | `slow->next = slow->next->next` |
 
-1. 创建 `dummy` 节点，`fast` 和 `slow` 均从 `dummy` 出发
-2. `fast` 先走 `n+1` 步（确保间距 = n+1）
-3. `fast` 和 `slow` 同步后移，直到 `fast` 到达末尾
-4. 此时 `slow` 指向待删除节点的前驱
-5. 执行 `slow->next = slow->next->next` 完成删除
-
-**代码实现**：
+### 代码实现
 
 ```cpp
 ListNode* removeNthFromEnd(ListNode* head, int n) {
-    // 创建哑节点，统一处理头节点删除
+    // 🎭 创建哑节点
     ListNode* dummy = new ListNode(0);
     dummy->next = head;
     
     ListNode* fast = dummy;
     ListNode* slow = dummy;
     
-    // 快指针先走 n+1 步，使慢指针最终停在待删除节点的前驱
+    // 🐰 快指针先走 n+1 步
     for (int i = 0; i <= n; i++) {
         fast = fast->next;
     }
     
-    // 快慢指针同步移动，直到快指针到达末尾
+    // 🐢🐰 同步移动直到快指针到达末尾
     while (fast != nullptr) {
         fast = fast->next;
         slow = slow->next;
     }
     
-    // 此时 slow 指向待删除节点的前驱
+    // 🗑️ 删除目标节点
     slow->next = slow->next->next;
     
-    // 返回新头节点（注意：可能已改变）
     ListNode* newHead = dummy->next;
-    delete dummy; // 释放哑节点
+    delete dummy;
     return newHead;
 }
 ```
 
-**时间复杂度**：O(n)  
-**空间复杂度**：O(1)
+{% note success flat %}
+⏱️ **时间复杂度**：O(n) | **空间复杂度**：O(1)
+{% endnote %}
 
 ---
 
-## 💡 本日总结
+## 💡 今日总结
 
-### 核心技巧
+### 🌟 核心技巧
 
-- **哑节点（dummy）**：统一头节点处理，避免边界判断
-- **双指针技巧**：
-    - 归并：同步比较 + 尾插
-    - 相交：路径交换消除长度差
-    - 定位：快慢指针维持固定间距
+| 技巧 | 应用场景 |
+|:---|:---|
+| **哑节点 (dummy)** | 统一头节点处理，避免边界判断 |
+| **双指针 - 归并** | 同步比较 + 尾插 |
+| **双指针 - 相交** | 路径交换消除长度差 |
+| **双指针 - 定位** | 快慢指针维持固定间距 |
 
-### 易错点 Checklist
+### ✅ 易错点 Checklist
 
 - [ ] 合并时是否正确更新 `current` 指针
-- [ ] 相交链表是否处理了无交点情况（同时为 `nullptr`）
-- [ ] 删除倒数节点时 `fast` 是否先走了 `n+1` 步（而非 `n` 步）
-- [ ] 是否正确释放了哑节点内存（`delete dummy`）
+- [ ] 相交链表是否处理了无交点情况
+- [ ] 删除节点时 `fast` 先走 `n+1` 步（不是 n 步！）
+- [ ] 是否正确释放了哑节点内存
 
-### 模板复用
+### 📋 通用模板
 
 ```cpp
-// 哑节点模板
+// 🎭 哑节点模板
 ListNode* dummy = new ListNode(0);
 dummy->next = head;
 // ... 操作
@@ -189,3 +186,7 @@ ListNode* newHead = dummy->next;
 delete dummy;
 return newHead;
 ```
+
+---
+
+*今天也在链表的世界里遨游~ (ノ>ω<)ノ* ✨
